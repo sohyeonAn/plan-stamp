@@ -1,117 +1,79 @@
-body {
-  margin-top: 50px;
+/* 초기화 */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-button {
-  width: 75px;
-  cursor: pointer;
-  box-shadow: 0px 0px 2px gray;
-  border: none;
-  outline: none;
-  padding: 5px;
-  border-radius: 5px;
+
+body{
+  background-image: linear-gradient(120deg, #915e9e, #ffdb66);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: white;
-}
-
-.inner {
+  min-height: 600px;
   width: 770px;
-  margin: 0 auto;
-  position: relative;
 }
 
-#header {
-  display: flex;
-  justify-content: right;
-  padding: 10px;
+button {
+  font-size: 15px;
+  border: none;
+  color: white;
+  border: none;
+  padding:10px;
+  border-radius: 10%;
+  cursor:pointer;
 }
 
-#header button {
-  font-size: 28px;
-  padding: 10px;
-  width: auto;
-  color: black;
-}
-
-#container {
-  display: none;
-}
-
-#titleSection {
-  padding: 10px;
-  color: #d36c6c;
-  font-size: 26px;
-  font-family: sans-serif;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-#titleSection button {
-  background-color:#92a1d1;
-}
-
-#mainDetail{
-  padding: 10px;
+header{
   font-size: 20px;
-  font-family: sans-serif;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin: 30px 10px;
 }
 
-#mainDetail p {
-
+.add-plan-button{
+  background-color: rgba(250, 140, 140, 0.867);
 }
 
-#mainTable {
+.plan-title-area,
+.plan-description-area{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+.plan-title{
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.change-title-button{
+  color: rgba(250, 140, 140, 0.867);
+  background-color:white;
+}
+
+.stamp-table-area{
   width: 100%;
-  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 30px;
   display: flex;
   flex-wrap: wrap;
 }
 
-.cell {
+.cell{
   width: 154px;
   padding: 10px;
-  height: 130px;
+  height: 100px;
   box-sizing: border-box;
-  background-color: white;
-  box-shadow: 0px 0px 3px red;
+  background-color: rgba(187, 179, 179, 0.418);
+  box-shadow: 0px 0px 3px #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.cell + #currentCell {
-  background-color:orange;
-}
-
-#titleChangeModal {
-  display: none;
-  z-index: 20;
-  padding: 25px;
-  background-color: #e8f4fa;
-  box-shadow: 0px 0px 3px black;
-  border-radius: 5px;
-  width: 350px;
-  top: 100px;
-  left: calc(50% - 175px);
-  position: absolute;
-  font-family: sans-serif;
-}
-
-#titleChangeInput {
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 25px;
-  border-radius: 3px;
-  outline: none;
-  border: none;
-  box-shadow: 0px 0px 3px gray;
-}
-
-#saveBtn {
-  background-color: #92a1d1;
-}
-
-#cancelBtn {
-  background-color: #d36c6c;
+.stamp{
+  background-color: blue;
 }
