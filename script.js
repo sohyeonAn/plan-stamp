@@ -160,9 +160,9 @@ function closeModal() {
 }
 
 function modifyPlanTitle(e) {
-  const currPlanTitleEl = e.target.parentElement.childNodes[0];
+  const currPlanTitleEl = e.target.parentElement.children[0];
   const prevPlantitle = currPlanTitleEl.value;
-  const okButton = e.target.parentElement.childNodes[1];
+  const okButton = e.target.parentElement.children[1];
 
   currPlanTitleEl.disabled=false;
   e.target.disabled = true;
