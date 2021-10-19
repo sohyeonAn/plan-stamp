@@ -44,6 +44,14 @@ header{
   padding: 5px 10px;
 }
 
+.plan-title:disabled{
+  font-size: 20px;
+  font-weight: 700;
+  border-style: none;
+  background-color: transparent;
+  color: white;
+}
+
 .plan-title{
   font-size: 20px;
   font-weight: 700;
@@ -52,6 +60,23 @@ header{
 .change-title-button{
   color: rgba(250, 140, 140, 0.867);
   background-color:white;
+}
+.change-title-button:disabled {
+  color:rgba(12, 10, 10, 0.418);
+  background-color:rgb(63, 45, 45);
+  cursor: default;
+}
+
+.ok-button{
+  color: rgba(250, 140, 140, 0.867);
+  background-color:white;
+  display: none;
+}
+
+.ok-button:disabled {
+  color:rgba(12, 10, 10, 0.418);
+  background-color:rgb(63, 45, 45);
+  cursor: default;
 }
 
 .stamp-table-area{
@@ -76,4 +101,23 @@ header{
 
 .stamp{
   background-color: blue;
+}
+
+.plan-add-modal, .plan-title-change-modal {
+  display: none;
+  z-index: 20;
+  background-color: #e8f4fa;
+  box-shadow: 0px 0px 3px black;
+  border-radius: 5px;
+  width: 350px;
+  color: black;
+  position: absolute;
+}
+
+.add-button, .cancel-button, .modify-button{
+  color: black;
+}
+
+.modify-button{
+  display: none;
 }
