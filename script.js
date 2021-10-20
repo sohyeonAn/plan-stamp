@@ -27,17 +27,17 @@ function getPlans() {
 
     // 이름 수정 버튼 클릭시 이벤트 추가
     changeTitleBtn.addEventListener('click', modifyPlanTitle);
-    
+
     planTitleArea.classList.add('plan-title-area');
     planTitleEl.classList.add('plan-title');
     changeTitleBtn.classList.add('change-title-button');
     okBtn.classList.add('ok-button');
 
     planTitleEl.value = plan.title;
-    planTitleEl.disabled=true;
+    planTitleEl.disabled = true;
     changeTitleBtn.textContent = '이름 수정';
     okBtn.textContent = "수정 완료";
-    
+
     planTitleArea.appendChild(planTitleEl);
     planTitleArea.appendChild(okBtn);
     planTitleArea.appendChild(changeTitleBtn);
@@ -61,11 +61,20 @@ function getPlans() {
     for (let i = 0; i < plan.tableSize; i++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
+      cell.innerText = i + 1;
+
+      const planCompleteBtn = document.createElement('button');
+      planCompleteBtn.textContent = "계획 실행 완료";
+      planCompleteBtn.classList.add('hidden');
+      planCompleteBtn.addEventListener('click', planCompleteBtnEvent);
 
       if (i < plan.stampCnt) {
         cell.classList.add('stamp');
+      } else if (i === plan.stampCnt) {
+        planCompleteBtn.classList.remove('hidden');
       }
-      cell.innerText = i + 1;
+
+      cell.appendChild(planCompleteBtn);
       stampTableArea.appendChild(cell);
     }
 
@@ -90,17 +99,17 @@ function addPlan() {
 
   // 이름 수정 버튼 클릭시 이벤트 추가
   changeTitleBtn.addEventListener('click', modifyPlanTitle);
-  
+
   planTitleArea.classList.add('plan-title-area');
   planTitleEl.classList.add('plan-title');
   changeTitleBtn.classList.add('change-title-button');
   okBtn.classList.add('ok-button');
 
-  planTitleEl.value = plan.title;
-  planTitleEl.disabled=true;
+  planTitleEl.value = planTitleInput.value;
+  planTitleEl.disabled = true;
   changeTitleBtn.textContent = '이름 수정';
   okBtn.textContent = "수정 완료";
-  
+
   planTitleArea.appendChild(planTitleEl);
   planTitleArea.appendChild(okBtn);
   planTitleArea.appendChild(changeTitleBtn);
@@ -126,6 +135,18 @@ function addPlan() {
     cell.classList.add('cell');
 
     cell.innerText = i + 1;
+
+    const planCompleteBtn = document.createElement('button');
+    planCompleteBtn.textContent = "계획 실행 완료";
+    planCompleteBtn.classList.add('hidden');
+    planCompleteBtn.addEventListener('click', planCompleteBtnEvent);
+
+    cell.appendChild(planCompleteBtn);
+
+    // 맨 처음 칸에 계획 실행 완료 버튼 보이기
+    if (i === 0) {
+      planCompleteBtn.classList.remove('hidden');
+    }
     stampTableArea.appendChild(cell);
   }
 
@@ -164,24 +185,24 @@ function modifyPlanTitle(e) {
   const prevPlantitle = currPlanTitleEl.value;
   const okButton = e.target.parentElement.children[1];
 
-  currPlanTitleEl.disabled=false;
+  currPlanTitleEl.disabled = false;
   e.target.disabled = true;
   okButton.style.display = 'block';
-  
+
   //수정 버튼 클릭시 이벤트 리스너 추가
-  okButton.addEventListener('click', function(){
+  okButton.addEventListener('click', function () {
     planTitleModifyEvent(prevPlantitle, currPlanTitleEl.value);
     okButton.disabled = true;
     okButton.style.display = 'none';
     e.target.disabled = false;
     currPlanTitleEl.disabled = true;
   });
-  
+
   //이름에 변경이 있는 이름수정 버튼 활성화
-  currPlanTitleEl.addEventListener('input', function(){
-    if(prevPlantitle === currPlanTitleEl.value){
-     okButton.disabled = true;
-    }else{
+  currPlanTitleEl.addEventListener('input', function () {
+    if (prevPlantitle === currPlanTitleEl.value) {
+      okButton.disabled = true;
+    } else {
       okButton.disabled = false;
     }
   });
@@ -193,14 +214,45 @@ function getPlansFromLocalStorage() {
   return plans;
 }
 
-function planTitleModifyEvent(prevTitle, currTitle){
+function planTitleModifyEvent(prevTitle, currTitle) {
   const plans = getPlansFromLocalStorage();
-  
+
   plans.forEach(plan => {
-    if(plan.title === prevTitle){
+    if (plan.title === prevTitle) {
       plan.title = currTitle;
     }
   })
 
-  localStorage.setItem('plans',JSON.stringify(plans));
+  localStorage.setItem('plans', JSON.stringify(plans));
+}
+
+function planCompleteBtnEvent(e) {
+  const planCompleteBtn = e.target;
+  const cell = e.target.parentElement;
+  const table = e.target.parentElement.parentElement;
+
+
+  // 현재 셀의 계획실행완료 버튼 없애고 도장 찍기
+  planCompleteBtn.classList.add('hidden');
+  cell.classList.add('stamp');
+
+
+  let nextCellIndex;
+  for (let i = 0; i < table.children.length; i++) {
+    if (!table.children[i].classList.contains('stamp')) {
+      nextCellIndex = i;
+      break;
+    }
+  }
+
+  if (nextCellIndex < table.children.length) {
+    const nextCell = table.children[nextCellIndex];
+    const nextPlanCompleteBtn = nextCell.children[0];
+
+    // 다음 셀에 계획실행완료 버튼 나타내기
+    nextPlanCompleteBtn.classList.remove('hidden');
+  }else{
+    return ;
+  }
+
 }

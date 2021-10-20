@@ -17,7 +17,7 @@ body{
 button {
   font-size: 15px;
   border: none;
-  color: white;
+  color: black;
   border: none;
   padding:10px;
   border-radius: 10%;
@@ -34,6 +34,7 @@ header{
 
 .add-plan-button{
   background-color: rgba(250, 140, 140, 0.867);
+  color: white;
 }
 
 .plan-title-area,
@@ -100,7 +101,10 @@ header{
 }
 
 .stamp{
-  background-color: blue;
+  background-image: url("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/GJstamp_stamp.svg/450px-GJstamp_stamp.svg.png");
+  background-size: 95px 95px;
+  background-position: 50%;
+  background-repeat: no-repeat;
 }
 
 .plan-add-modal, .plan-title-change-modal {
@@ -119,5 +123,9 @@ header{
 }
 
 .modify-button{
+  display: none;
+}
+
+.hidden {
   display: none;
 }
