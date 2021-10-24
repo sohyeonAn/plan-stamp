@@ -34,6 +34,7 @@ function getPlans() {
   let plans = getPlansFromLocalStorage();
 
   plans.forEach(plan => {
+    const planArea = document.createElement('div');
     const planTitleArea = document.createElement('div');
     const planTitleEl = document.createElement('input');
     const changeTitleBtn = document.createElement('button');
@@ -42,6 +43,7 @@ function getPlans() {
     // 이름 수정 버튼 클릭시 이벤트 추가
     changeTitleBtn.addEventListener('click', modifyPlanTitle);
 
+    planArea.classList.add('plan-area');
     planTitleArea.classList.add('plan-title-area');
     planTitleEl.classList.add('plan-title');
     changeTitleBtn.classList.add('change-title-button');
@@ -95,9 +97,11 @@ function getPlans() {
     stampTableArea.classList.add('stamp-table-area');
 
 
-    planContainer.appendChild(planTitleArea);
-    planContainer.appendChild(planDescriptionArea);
-    planContainer.appendChild(stampTableArea);
+    planArea.appendChild(planTitleArea);
+    planArea.appendChild(planDescriptionArea);
+    planArea.appendChild(stampTableArea);
+
+    planContainer.appendChild(planArea);
   });
 }
 
@@ -106,6 +110,7 @@ function addPlanModalEvent() {
 }
 
 function addPlan() {
+  const planArea = document.createElement('div');
   const planTitleArea = document.createElement('div');
   const planTitleEl = document.createElement('input');
   const changeTitleBtn = document.createElement('button');
@@ -114,6 +119,7 @@ function addPlan() {
   // 이름 수정 버튼 클릭시 이벤트 추가
   changeTitleBtn.addEventListener('click', modifyPlanTitle);
 
+  planArea.classList.add('plan-area');
   planTitleArea.classList.add('plan-title-area');
   planTitleEl.classList.add('plan-title');
   changeTitleBtn.classList.add('change-title-button');
@@ -167,9 +173,11 @@ function addPlan() {
   stampTableArea.classList.add('stamp-table-area');
 
 
-  planContainer.appendChild(planTitleArea);
-  planContainer.appendChild(planDescriptionArea);
-  planContainer.appendChild(stampTableArea);
+  planArea.appendChild(planTitleArea);
+  planArea.appendChild(planDescriptionArea);
+  planArea.appendChild(stampTableArea);
+
+  planContainer.append(planArea);
 
   // localStorage에 새로운 계획 추가하기
   let plans = getPlansFromLocalStorage();
@@ -244,8 +252,9 @@ function planTitleModifyEvent(prevTitle, currTitle) {
 
 function planCompleteBtnEvent(e) {
   const planCompleteBtn = e.target;
-  const cell = e.target.parentElement;
-  const table = e.target.parentElement.parentElement;
+  const cell = planCompleteBtn.parentElement;
+  const table = cell.parentElement;
+  const planArea = table.parentElement;
 
 
   // 현재 셀의 계획실행완료 버튼 없애고 도장 찍기
@@ -253,24 +262,40 @@ function planCompleteBtnEvent(e) {
   cell.classList.add('stamp');
 
 
-  let nextCellIndex;
-  for (let i = 0; i < table.children.length; i++) {
+  let nextCellIndex = 0;
+  const tableSize = table.children.length;
+  for (let i = 0; i < tableSize; i++) {
     if (!table.children[i].classList.contains('stamp')) {
       nextCellIndex = i;
       break;
     }
+
+    // 마지막 셀까지 도달하여 다음 셀이 없을 경우
+    // 인덱스는 0부터 시작하기 때문에 다음 셀의 인덱스는 테이블사이즈로 한다.
+    if (i === tableSize - 1 && table.children[i].classList.contains('stamp')) {
+      nextCellIndex = tableSize;
+    }
   }
 
-  if (nextCellIndex < table.children.length) {
+  if (nextCellIndex < tableSize) {
+    // 다음 셀에 계획실행완료 버튼 나타내기
     const nextCell = table.children[nextCellIndex];
     const nextPlanCompleteBtn = nextCell.children[0];
 
-    // 다음 셀에 계획실행완료 버튼 나타내기
     nextPlanCompleteBtn.classList.remove('hidden');
-  } else {
-    return;
   }
 
+  //도장이 추가됐기 때문에 플랜의 stampCnt를 변경한다.
+  const planTitle = planArea.firstChild.firstChild.value;
+  const plans = getPlansFromLocalStorage();
+
+  plans.forEach(plan => {
+    if (plan.title === planTitle) {
+      plan.stampCnt = nextCellIndex;
+    }
+  });
+
+  localStorage.setItem('plans', JSON.stringify(plans));
 }
 
 
@@ -376,7 +401,7 @@ function getRewardsCnt(modalEl) {
 
 function inputRewardModal(modalEl, rewardsCnt) {
   const rewardInputArea = document.querySelector(".reward-input-area");
-  
+
   // rewardInputArea에 기존에 있던 보상목록 제거
   while (rewardInputArea.hasChildNodes()) {
     rewardInputArea.removeChild(rewardInputArea.firstChild);
