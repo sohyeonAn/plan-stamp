@@ -327,6 +327,8 @@ function placeOfRewardsModal(modalEl) {
   for (let i = 0; i < tableSizeInput.value; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
+    cell.classList.add('pointer');
+
     cell.innerText = i + 1;
 
     const rewardPlaceText = document.createElement('p');
@@ -373,24 +375,25 @@ function getRewardsCnt(modalEl) {
 }
 
 function inputRewardModal(modalEl, rewardsCnt) {
-  console.log(modalEl.children);
-  for (let j = 0; j < modalEl.children.length; j++) {
-    if (modalEl.children[j].classList.contains("reward-input-area")) {
-      modalEl.children[j].remove();
-    }
+  const rewardInputArea = document.querySelector(".reward-input-area");
+  
+  // rewardInputArea에 기존에 있던 보상목록 제거
+  while (rewardInputArea.hasChildNodes()) {
+    rewardInputArea.removeChild(rewardInputArea.firstChild);
   }
 
+  // 보상 입력창 추가
   for (let i = 0; i < rewardsCnt; i++) {
-    const rewardInputArea = document.createElement('div');
-    rewardInputArea.classList.add("reward-input-area");
+    const rewardInputDiv = document.createElement('div');
     const label = document.createElement('p');
     label.innerText = `보상 ${i+1}를 입력해주세요.`;
     const rewardInputText = document.createElement('input');
     rewardInputText.classList.add('reward-input-text');
-    rewardInputArea.appendChild(label);
-    rewardInputArea.appendChild(rewardInputText);
 
-    modalEl.appendChild(rewardInputArea);
+    rewardInputDiv.appendChild(label);
+    rewardInputDiv.appendChild(rewardInputText);
 
+    rewardInputArea.appendChild(rewardInputDiv);
   }
+
 }
