@@ -13,9 +13,11 @@ const nextBtn_2 = document.querySelector(".next-button-2");
 const prevBtn_1 = document.querySelector(".prev-button-1");
 const prevBtn_2 = document.querySelector(".prev-button-2");
 
-// 모달에서 입력받은 정보(계획명, 테이블크기)
+// 모달에서 입력받은 정보
 const planTitleInput = document.querySelector('.plan-title-input');
 const tableSizeInput = document.querySelector('.table-size-input');
+let rewardsPlace = [];
+let rewardsArr = [];
 
 //이벤트 리스너
 document.addEventListener('DOMContentLoaded', getPlans);
@@ -66,7 +68,11 @@ function getPlans() {
     restDayEl.classList.add('rest-day');
     stampCntEl.classList.add('stamp-count-text');
 
-    restDayEl.innerText = `다음 보상까지 ${plan.tableSize - plan.stampCnt}일 남았습니다.`;
+    if (plan.tableSize === plan.stampCnt)
+      restDayEl.innerText = `축하합니다! 해당 계획을 완료하였습니다.`;
+    else {
+      restDayEl.innerText = `다음 보상까지 ${plan.tableSize - plan.stampCnt}일 남았습니다.`;
+    }
     stampCntEl.innerText = `(${plan.stampCnt}/${plan.tableSize})`;
 
     planDescriptionArea.appendChild(restDayEl);
@@ -109,7 +115,20 @@ function addPlanModalEvent() {
   addPlanModal_1.classList.remove(('hidden'));
 }
 
+function setRewardsInput() {
+  const rewardInputArea = document.querySelector(".reward-input-area");
+
+  // rewardInputArea에 기존에 있던 보상목록을 rewardArr에 넣기 
+  for(let i=0; i<rewardInputArea.children.length;i++){
+    if(rewardInputArea.children[i].children[1].tagName === "INPUT"){
+      rewardsArr.push(rewardInputArea.children[i].children[1].value);
+    }
+  }
+}
+
 function addPlan() {
+  setRewardsInput();
+
   const planArea = document.createElement('div');
   const planTitleArea = document.createElement('div');
   const planTitleEl = document.createElement('input');
@@ -167,6 +186,13 @@ function addPlan() {
     if (i === 0) {
       planCompleteBtn.classList.remove('hidden');
     }
+
+    // 보상자리에 해당하면 보상추가텍스트 추가하기
+    rewardsPlace.forEach( (placeNum, idx) => {
+      if(i+1 === placeNum){
+        cell.innerText = `${i+1} 보상명: ${rewardsArr[idx]}`;
+      }
+    })
     stampTableArea.appendChild(cell);
   }
 
@@ -186,6 +212,8 @@ function addPlan() {
     title: planTitleInput.value,
     stampCnt: 0,
     tableSize: parseInt(tableSizeInput.value),
+    rewardsPlace: rewardsPlace,
+    rewardsArr: rewardsArr,
   })
 
   localStorage.setItem('plans', JSON.stringify(plans));
@@ -202,6 +230,8 @@ function closeModal() {
   // 계획 추가 모달 인풋 초기화
   planTitleInput.value = '';
   tableSizeInput.value = '';
+  rewardsPlace = [];
+  rewardsArr = [];
 }
 
 function modifyPlanTitle(e) {
@@ -318,8 +348,7 @@ function moveNextModal(e) {
     addPlanModal_3.classList.remove('hidden');
 
     //세번째 모달 세팅하기.
-    rewardsCnt = getRewardsCnt(addPlanModal_2);
-    inputRewardModal(addPlanModal_3, rewardsCnt);
+    inputRewardModal(addPlanModal_3);
   }
 
 }
@@ -342,12 +371,11 @@ function movePrevModal(e) {
 }
 
 function placeOfRewardsModal(modalEl) {
-  const stampAreaEl = modalEl.lastElementChild;
-  if (stampAreaEl.classList.contains("stamp-table-area")) {
-    stampAreaEl.remove();
+  const stampTableArea = document.querySelector(".modal-stamp-table-area");
+  while (stampTableArea.hasChildNodes()) {
+    stampTableArea.removeChild(stampTableArea.firstChild);
   }
 
-  const stampTableArea = document.createElement('div');
 
   for (let i = 0; i < tableSizeInput.value; i++) {
     const cell = document.createElement('div');
@@ -366,40 +394,24 @@ function placeOfRewardsModal(modalEl) {
     stampTableArea.appendChild(cell);
   }
 
-  stampTableArea.classList.add('stamp-table-area');
   modalEl.appendChild(stampTableArea);
 }
 
 function placeOfRewardBtnEvent(e) {
   const clickedCell = e.target;
-  const placeText = clickedCell.children[0];
-  clickedCell.classList.toggle('clicked');
+  const clickedCellNum = parseInt(clickedCell.innerText);
 
-  if (placeText.classList.contains('hidden')) {
-    placeText.innerText = "여기가 보상!";
-    placeText.classList.remove("hidden");
+  clickedCell.classList.toggle('checked');
+
+  if (clickedCell.classList.contains('checked')) {
+    rewardsPlace.push(clickedCellNum);
   } else {
-    placeText.innerText = "";
-    placeText.classList.add("hidden");
+    rewardsPlace.splice(rewardsPlace.indexOf(clickedCellNum), 1);
   }
-
 }
 
-function getRewardsCnt(modalEl) {
-  const stampAreaEl = modalEl.lastElementChild;
-  let rewardsCnt = 0;
 
-  for (let i = 0; i < stampAreaEl.children.length; i++) {
-    const cell = stampAreaEl.children[i];
-    if (cell.classList.contains('clicked')) {
-      rewardsCnt += 1;
-    }
-  }
-
-  return rewardsCnt;
-}
-
-function inputRewardModal(modalEl, rewardsCnt) {
+function inputRewardModal(modalEl) {
   const rewardInputArea = document.querySelector(".reward-input-area");
 
   // rewardInputArea에 기존에 있던 보상목록 제거
@@ -407,11 +419,17 @@ function inputRewardModal(modalEl, rewardsCnt) {
     rewardInputArea.removeChild(rewardInputArea.firstChild);
   }
 
+  // 모달2에서 선택한 보상 자리 순서대로 입력될 수 있도록 정렬한다.
+  rewardsPlace.sort(function (a, b) {
+    return a - b;
+  });
+
+
   // 보상 입력창 추가
-  for (let i = 0; i < rewardsCnt; i++) {
+  for (let i = 0; i < rewardsPlace.length; i++) {
     const rewardInputDiv = document.createElement('div');
     const label = document.createElement('p');
-    label.innerText = `보상 ${i+1}를 입력해주세요.`;
+    label.innerText = `${rewardsPlace[i]}번째 위치할 보상을 입력해주세요.`;
     const rewardInputText = document.createElement('input');
     rewardInputText.classList.add('reward-input-text');
 
